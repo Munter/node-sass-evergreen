@@ -18,12 +18,14 @@ module.exports = extend({}, sass, {
     };
 
     var errorCallback = function (err) {
+      var file = err.match(/^[^:]+/)[0];
+      var line = parseInt(err.match(/:(\d+):/)[1] || 0);
+      var message = err.match(/error: (.*)/)[1];
+
       cb({
-        message: '',
-        line: '',
-        column: '',
-        status: '',
-        file: ''
+        message: message,
+        line: line,
+        file: file
       });
     };
 
