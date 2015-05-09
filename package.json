@@ -4,7 +4,7 @@
   "description": "node-sass compatibility wrapper providing nodes-sass compatibility with previous major versions",
   "main": "index.js",
   "scripts": {
-    "postinstall": "for DIR in `ls -1 | grep version-`; do cd $DIR && npm install && cd ..; done",
+    "postinstall": "for DIR in `ls -1 | grep version-`; do cd $DIR; npm install; cd ..; done",
     "lint": "jshint .",
     "test": "npm run lint && mocha",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot",
