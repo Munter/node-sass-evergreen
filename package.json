@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "for DIR in `ls -1 | grep version-`; do cd $DIR && npm install && cd ..; done",
-    "test": "mocha"
+    "lint": "jshint .",
+    "test": "npm run lint && mocha"
   },
   "repository": {
     "type": "git",
