@@ -1,0 +1,28 @@
+{
+  "name": "node-sass-evergreen",
+  "version": "0.0.0",
+  "description": "node-sass compatibility wrapper providing nodes-sass compatibility with previous major versions",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "for DIR in `ls -1 | grep version-`; do cd $DIR && npm install && cd ..; done",
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Munter/node-sass-evergreen.git"
+  },
+  "keywords": [
+    "sass",
+    "libsass",
+    "nodesass",
+    "evergreen",
+    "backwards",
+    "compatibility"
+  ],
+  "author": "Peter Müller <munter@fumle.dk>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Munter/node-sass-evergreen/issues"
+  },
+  "homepage": "https://github.com/Munter/node-sass-evergreen"
+}
