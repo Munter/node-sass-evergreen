@@ -29,6 +29,7 @@
   },
   "homepage": "https://github.com/Munter/node-sass-evergreen",
   "devDependencies": {
+    "coveralls": "^2.11.2",
     "istanbul": "^0.3.13",
     "jshint": "^2.7.0",
     "mocha": "^2.2.4",
