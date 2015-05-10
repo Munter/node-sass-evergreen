@@ -2,6 +2,7 @@
 
 var sass = require('node-sass');
 var extend = require('extend');
+var Fiber = require('fibers');
 
 var version = require('node-sass/package.json').version;
 
@@ -9,7 +10,7 @@ function typesError() {
   throw new Error('types are not available in node-sass ' + version);
 }
 
-function polyFillOptions(options, cb) {
+function compatRender(options, cb) {
   var successCallback, errorCallback;
   var stats = {};
 
@@ -43,12 +44,14 @@ function polyFillOptions(options, cb) {
     };
   }
 
-  return extend({}, options, {
+  var newOptions = extend({}, options, {
     success: successCallback,
     error: errorCallback,
     stats: stats,
     sourceComments: options.sourceComments === true ? 'normal' : 'none'
   });
+
+  sass.render(newOptions, cb);
 }
 
 module.exports = extend({}, sass, {
@@ -56,9 +59,24 @@ module.exports = extend({}, sass, {
 
   info: 'node-sass\t' + version + '\t(Wrapper)\t[JavaScript]\nlibsass  \t?.?.?\t(Sass Compiler)\t[C/C++]',
 
-  render: function (options, cb) {
-    sass.render(polyFillOptions(options, cb));
-  },
+  render: compatRender,
+
+  renderSync: (new Fiber(function (options) {
+    var internal = Fiber.current;
+
+    compatRender(options, function (err, result) {
+      if (err) {
+        console.log(err);
+        return internal.throwInto(err);
+      }
+
+      console.log(result);
+
+      return internal.run(result);
+    });
+
+    return Fiber.yield();
+  })).run,
 
   types: {
     'Number': typesError,

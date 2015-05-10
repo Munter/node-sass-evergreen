@@ -127,4 +127,53 @@ describe('node-sass 0.x', function () {
 
     });
   });
+
+  describe('sync rendering', function () {
+    describe('using `data`', function () {
+      it('should render basic example', function (done) {
+        expect(sass.renderSync({
+          data: 'body { background: hotpink; }'
+        }), 'to exhaustively satisfy', {
+          css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: hotpink; }\n'),
+          map: expect.it('when decoded as', 'utf8', 'to be', ''),
+          stats: {
+            entry: 'data',
+            start: expect.it('to be a number'),
+            includedFiles: [],
+            end: expect.it('to be a number'),
+            duration: expect.it('to be a number'),
+            sourceMap: undefined
+          }
+        });
+
+        done();
+      });
+
+      it('should render basic example with sourceComments', function () {
+        expect(sass.renderSync({
+          data: 'body { background: hotpink; }',
+          sourceComments: true
+        }), 'to exhaustively satisfy', {
+          css: expect.it('when decoded as', 'utf8', 'to be', '/* line 1, source string */\nbody {\n  background: hotpink; }\n'),
+          map: expect.it('when decoded as', 'utf8', 'to be', ''),
+          stats: expect.it('to satisfy', {
+            includedFiles: [],
+            sourceMap: undefined
+          })
+        });
+      });
+
+      it('should fail on syntax errors', function () {
+        expect(sass.renderSync.bind(null, {
+          data: 'body {\n  background: hotpink;\n}}',
+          sourceComments: true
+        }), 'to throw', 'to satisfy', {
+          message: 'invalid top-level expression',
+          line: 3,
+          file: 'source string'
+        });
+      });
+
+    });
+  });
 });
