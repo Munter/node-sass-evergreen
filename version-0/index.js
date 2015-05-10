@@ -61,22 +61,27 @@ module.exports = extend({}, sass, {
 
   render: compatRender,
 
-  renderSync: (new Fiber(function (options) {
-    var internal = Fiber.current;
+  renderSync: (function () {
+    var fiber = new Fiber(function (options) {
+      var internal = Fiber.current;
 
-    compatRender(options, function (err, result) {
-      if (err) {
-        console.log(err);
-        return internal.throwInto(err);
-      }
+      compatRender(options, function (err, result) {
+        if (err) {
+          return internal.throwInto(err);
+        }
 
-      console.log(result);
+        internal.run(result);
+      });
 
-      return internal.run(result);
+      var returnData = Fiber.yield();
+
+      console.log('returnData', returnData);
+
+      return returnData;
     });
 
-    return Fiber.yield();
-  })).run,
+    return fiber.run.bind(fiber);
+  }()),
 
   types: {
     'Number': typesError,
