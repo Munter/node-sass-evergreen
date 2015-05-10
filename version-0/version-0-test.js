@@ -54,6 +54,15 @@ describe('node-sass 0.x', function () {
     });
   });
 
+  describe('indentedSyntax', function () {
+    it('should throw when passing in the indentedSyntax config', function () {
+      expect(sass.render.bind(null, {
+        data: 'body { background: hotpink; }',
+        indentedSyntax: true
+      }), 'to throw');
+    });
+  });
+
   describe('async rendering', function () {
     describe('using `data`', function () {
       it('should render basic example', function (done) {

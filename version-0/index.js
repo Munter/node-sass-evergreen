@@ -13,6 +13,10 @@ function checkOptions(options) {
   if (typeof options.importer === 'function' || Array.isArray(options.importer)) {
     throw new Error('options.importer is not supported in node-sass ' + sass._version);
   }
+
+  if (options.indentedSyntax === true) {
+    throw new Error('options.indentedSyntax is not supported in node-sass ' + sass._version);
+  }
 }
 
 module.exports = extend({}, sass, {
