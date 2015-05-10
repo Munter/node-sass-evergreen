@@ -5,12 +5,20 @@ var extend = require('extend');
 
 sass._version = require('node-sass/package.json').version;
 
-var typesError = function () {
+function typesError() {
   throw new Error('types are not available in node-sass ' + sass._version);
-};
+}
+
+function checkOptions(options) {
+  if (typeof options.importer === 'function' || Array.isArray(options.importer)) {
+    throw new Error('options.importer is not supported in node-sass ' + sass._version);
+  }
+}
 
 module.exports = extend({}, sass, {
   render: function (options, cb) {
+    checkOptions(options);
+
     var stats = {};
 
     var successCallback = function(css) {
