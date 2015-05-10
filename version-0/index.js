@@ -3,29 +3,26 @@
 var sass = require('node-sass');
 var extend = require('extend');
 
-sass._version = require('node-sass/package.json').version;
+var version = require('node-sass/package.json').version;
 
 function typesError() {
-  throw new Error('types are not available in node-sass ' + sass._version);
+  throw new Error('types are not available in node-sass ' + version);
 }
 
-function checkOptions(options) {
+function polyFillOptions(options, cb) {
+  var successCallback, errorCallback;
+  var stats = {};
+
   if (typeof options.importer === 'function' || Array.isArray(options.importer)) {
-    throw new Error('options.importer is not supported in node-sass ' + sass._version);
+    throw new Error('options.importer is not supported in node-sass ' + version);
   }
 
   if (options.indentedSyntax === true) {
-    throw new Error('options.indentedSyntax is not supported in node-sass ' + sass._version);
+    throw new Error('options.indentedSyntax is not supported in node-sass ' + version);
   }
-}
 
-module.exports = extend({}, sass, {
-  render: function (options, cb) {
-    checkOptions(options);
-
-    var stats = {};
-
-    var successCallback = function(css) {
+  if (cb) {
+    successCallback = function(css) {
       cb(undefined, {
         css: new Buffer(css, 'utf8'),
         map: new Buffer('', 'utf8'),
@@ -33,7 +30,7 @@ module.exports = extend({}, sass, {
       });
     };
 
-    var errorCallback = function (err) {
+    errorCallback = function (err) {
       var file = err.match(/^[^:]+/)[0];
       var line = parseInt(err.match(/:(\d+):/)[1] || 0);
       var message = err.match(/error: (.*)/)[1];
@@ -44,13 +41,23 @@ module.exports = extend({}, sass, {
         file: file
       });
     };
+  }
 
-    sass.render(extend({}, options, {
-      success: successCallback,
-      error: errorCallback,
-      stats: stats,
-      sourceComments: options.sourceComments === true ? 'normal' : 'none'
-    }));
+  return extend({}, options, {
+    success: successCallback,
+    error: errorCallback,
+    stats: stats,
+    sourceComments: options.sourceComments === true ? 'normal' : 'none'
+  });
+}
+
+module.exports = extend({}, sass, {
+  version: version,
+
+  info: 'node-sass\t' + version + '\t(Wrapper)\t[JavaScript]\nlibsass  \t?.?.?\t(Sass Compiler)\t[C/C++]',
+
+  render: function (options, cb) {
+    sass.render(polyFillOptions(options, cb));
   },
 
   types: {

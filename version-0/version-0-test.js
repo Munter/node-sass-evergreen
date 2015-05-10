@@ -5,7 +5,11 @@ var expect = require('unexpected');
 
 describe('node-sass 0.x', function () {
   it('should load the correct version', function () {
-    expect(sass._version, 'to match', /^0.\d+.\d+$/);
+    expect(sass.version, 'to match', /^0.\d+.\d+$/);
+  });
+
+  it('should show the relevant info', function () {
+    expect(sass.info, 'to match', /\t0.\d+.\d+\t/);
   });
 
   describe('types', function () {
