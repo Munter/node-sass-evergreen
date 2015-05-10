@@ -5,6 +5,10 @@ var extend = require('extend');
 
 sass._version = require('node-sass/package.json').version;
 
+var typesError = function () {
+  throw new Error('types are not available in node-sass ' + sass._version);
+};
+
 module.exports = extend({}, sass, {
   render: function (options, cb) {
     var stats = {};
@@ -35,5 +39,15 @@ module.exports = extend({}, sass, {
       stats: stats,
       sourceComments: options.sourceComments === true ? 'normal' : 'none'
     }));
+  },
+
+  types: {
+    'Number': typesError,
+    'String': typesError,
+    'Color': typesError,
+    'Boolean': typesError,
+    'List': typesError,
+    'Map': typesError,
+    'Null': typesError
   }
 });
