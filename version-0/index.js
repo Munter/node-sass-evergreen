@@ -9,6 +9,18 @@ function typesError() {
   throw new Error('types are not available in node-sass ' + version);
 }
 
+function qualifyError(err) {
+  var file = err.match(/^[^:]+/)[0];
+  var line = parseInt(err.match(/:(\d+):/)[1] || 0);
+  var message = err.match(/error: (.*)/)[1];
+
+  return {
+    message: message,
+    line: line,
+    file: file
+  };
+}
+
 function polyFillOptions(options, cb) {
   var successCallback, errorCallback;
   var stats = {};
@@ -31,15 +43,7 @@ function polyFillOptions(options, cb) {
     };
 
     errorCallback = function (err) {
-      var file = err.match(/^[^:]+/)[0];
-      var line = parseInt(err.match(/:(\d+):/)[1] || 0);
-      var message = err.match(/error: (.*)/)[1];
-
-      cb({
-        message: message,
-        line: line,
-        file: file
-      });
+      cb(qualifyError(err));
     };
   }
 
@@ -58,6 +62,26 @@ module.exports = extend({}, sass, {
 
   render: function (options, cb) {
     sass.render(polyFillOptions(options, cb));
+  },
+
+  renderSync: function (options) {
+    var compatOptions = polyFillOptions(options);
+    var result;
+
+    try {
+      result = sass.renderSync(compatOptions);
+    } catch (err) {
+      var qualified = qualifyError(err);
+      var newErr = new Error(qualified.message);
+
+      throw extend(newErr, qualified);
+    }
+
+    return {
+      css: new Buffer(result, 'utf8'),
+      map: new Buffer('', 'utf8'),
+      stats: compatOptions.stats
+    };
   },
 
   types: {
