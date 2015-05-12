@@ -18,13 +18,4 @@ module.exports = function (sass) {
       }), 'to throw');
     });
   });
-
-  describe('indentedSyntax', function () {
-    it('should throw when passing in the indentedSyntax config', function () {
-      expect(sass.render.bind(null, {
-        data: 'body { background: hotpink; }',
-        indentedSyntax: true
-      }), 'to throw');
-    });
-  });
 };
