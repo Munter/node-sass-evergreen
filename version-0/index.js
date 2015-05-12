@@ -37,7 +37,7 @@ function polyFillOptions(options, cb) {
     successCallback = function(css) {
       cb(undefined, {
         css: new Buffer(css, 'utf8'),
-        map: stats.map && new Buffer(stats.map, 'utf8'),
+        map: stats.sourceMap && new Buffer(stats.sourceMap, 'utf8'),
         stats: stats
       });
     };
@@ -51,7 +51,7 @@ function polyFillOptions(options, cb) {
     success: successCallback,
     error: errorCallback,
     stats: stats,
-    sourceComments: options.sourceComments === true ? 'normal' : 'none'
+    sourceComments: options.sourceMap ? 'map' : (options.sourceComments === true ? 'normal' : 'none')
   });
 }
 
@@ -61,7 +61,9 @@ module.exports = extend({}, sass, {
   info: 'node-sass\t' + version + '\t(Wrapper)\t[JavaScript]\nlibsass  \t?.?.?\t(Sass Compiler)\t[C/C++]',
 
   render: function (options, cb) {
-    sass.render(polyFillOptions(options, cb));
+    var compatOptions = polyFillOptions(options, cb);
+
+    sass.render(compatOptions);
   },
 
   renderSync: function (options) {
