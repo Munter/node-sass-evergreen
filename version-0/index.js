@@ -37,7 +37,7 @@ function polyFillOptions(options, cb) {
     successCallback = function(css) {
       cb(undefined, {
         css: new Buffer(css, 'utf8'),
-        map: new Buffer('', 'utf8'),
+        map: stats.map && new Buffer(stats.map, 'utf8'),
         stats: stats
       });
     };
@@ -79,7 +79,7 @@ module.exports = extend({}, sass, {
 
     return {
       css: new Buffer(result, 'utf8'),
-      map: new Buffer('', 'utf8'),
+      map: compatOptions.stats.map && new Buffer(compatOptions.stats.map, 'utf8'),
       stats: compatOptions.stats
     };
   },

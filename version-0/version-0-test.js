@@ -76,7 +76,7 @@ describe('node-sass 0.x', function () {
           expect(err, 'to be undefined');
           expect(result, 'to exhaustively satisfy', {
             css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: hotpink; }\n'),
-            map: expect.it('when decoded as', 'utf8', 'to be', ''),
+            map: undefined,
             stats: {
               entry: 'data',
               start: expect.it('to be a number'),
@@ -99,7 +99,7 @@ describe('node-sass 0.x', function () {
           expect(err, 'to be undefined');
           expect(result, 'to exhaustively satisfy', {
             css: expect.it('when decoded as', 'utf8', 'to be', '/* line 1, source string */\nbody {\n  background: hotpink; }\n'),
-            map: expect.it('when decoded as', 'utf8', 'to be', ''),
+            map: undefined,
             stats: expect.it('to satisfy', {
               includedFiles: [],
               sourceMap: undefined
@@ -138,7 +138,7 @@ describe('node-sass 0.x', function () {
 
         expect(result, 'to exhaustively satisfy', {
           css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: hotpink; }\n'),
-          map: expect.it('when decoded as', 'utf8', 'to be', ''),
+          map: undefined,
           stats: {
             entry: 'data',
             start: expect.it('to be a number'),
@@ -158,7 +158,7 @@ describe('node-sass 0.x', function () {
 
         expect(result, 'to exhaustively satisfy', {
           css: expect.it('when decoded as', 'utf8', 'to be', '/* line 1, source string */\nbody {\n  background: hotpink; }\n'),
-          map: expect.it('when decoded as', 'utf8', 'to be', ''),
+          map: undefined,
           stats: expect.it('to satisfy', {
             includedFiles: [],
             sourceMap: undefined
