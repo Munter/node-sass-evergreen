@@ -8,7 +8,7 @@
     "pretest": "for DIR in `ls -1 | grep version-`; do cd $DIR; npm install; cd ..; done",
     "test": "npm run lint && mocha",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot",
-    "travis": "npm run lint && npm run pre-test && npm run coverage"
+    "travis": "npm run lint && npm run pretest && npm run coverage"
   },
   "repository": {
     "type": "git",
