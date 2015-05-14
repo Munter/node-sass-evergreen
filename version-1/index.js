@@ -15,10 +15,6 @@ function qualifyError(err) {
   var line = parseInt(parts[1] || 0);
   var message = parts[2].trim().replace(/\n$/, '');
 
-  if (file === 'source string') {
-    file = 'stdin';
-  }
-
   return {
     message: message,
     line: line,
@@ -91,10 +87,6 @@ module.exports = extend({}, sass, {
       var newErr = new Error(qualified.message);
 
       throw extend(newErr, qualified);
-    }
-
-    if (options.data) {
-      result = result.replace(', source string */', ', stdin */');
     }
 
     var returnValue = {
