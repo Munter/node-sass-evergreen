@@ -14,14 +14,12 @@ module.exports = function (sass) {
 
         expect(result, 'to exhaustively satisfy', {
           css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: hotpink; }\n'),
-          map: undefined,
           stats: {
             entry: 'data',
             start: expect.it('to be a number'),
             includedFiles: [],
             end: expect.it('to be a number'),
-            duration: expect.it('to be a number'),
-            sourceMap: undefined
+            duration: expect.it('to be a number')
           }
         });
       });
@@ -33,11 +31,9 @@ module.exports = function (sass) {
         });
 
         expect(result, 'to exhaustively satisfy', {
-          css: expect.it('when decoded as', 'utf8', 'to be', '/* line 1, source string */\nbody {\n  background: hotpink; }\n'),
-          map: undefined,
+          css: expect.it('when decoded as', 'utf8', 'to be', '/* line 1, stdin */\nbody {\n  background: hotpink; }\n'),
           stats: expect.it('to satisfy', {
-            includedFiles: [],
-            sourceMap: undefined
+            includedFiles: []
           })
         });
       });
@@ -52,7 +48,7 @@ module.exports = function (sass) {
           expect(err, 'to satisfy', {
             message: 'invalid top-level expression',
             line: 3,
-            file: 'source string'
+            file: 'stdin'
           });
         });
       });

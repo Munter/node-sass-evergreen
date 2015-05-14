@@ -14,6 +14,10 @@ function qualifyError(err) {
   var line = parseInt(err.match(/:(\d+):/)[1] || 0);
   var message = err.match(/error: (.*)/)[1];
 
+  if (file === 'source string') {
+    file = 'stdin';
+  }
+
   return {
     message: message,
     line: line,
@@ -34,10 +38,19 @@ function polyFillOptions(options, cb) {
   }
 
   if (cb) {
+
     successCallback = function(css) {
-      cb(undefined, {
+      var sourceMap = stats.sourceMap && new Buffer(stats.sourceMap, 'utf8');
+
+      delete stats.sourceMap;
+
+      if (options.sourceComments === true && options.data) {
+        css = css.replace(', source string */', ', stdin */');
+      }
+
+      cb(null, {
         css: new Buffer(css, 'utf8'),
-        map: stats.sourceMap && new Buffer(stats.sourceMap, 'utf8'),
+        map: sourceMap,
         stats: stats
       });
     };
@@ -79,11 +92,24 @@ module.exports = extend({}, sass, {
       throw extend(newErr, qualified);
     }
 
-    return {
+    if (options.data) {
+      result = result.replace(', source string */', ', stdin */');
+    }
+
+    var returnValue = {
       css: new Buffer(result, 'utf8'),
-      map: compatOptions.stats.map && new Buffer(compatOptions.stats.map, 'utf8'),
       stats: compatOptions.stats
     };
+
+    if ('sourceMap' in compatOptions.stats) {
+      extend(returnValue, {
+        map: compatOptions.stats.sourceMap && new Buffer(compatOptions.stats.sourceMap, 'utf8'),
+      });
+
+      delete returnValue.stats.sourceMap;
+    }
+
+    return returnValue;
   },
 
   types: {
