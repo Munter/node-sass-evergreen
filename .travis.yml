@@ -6,7 +6,7 @@ cache:
   - version-0/node_modules
   - version-1/node_modules
   - version-2/node_modules
-  - version-3/node_modules
+  - version-latest/node_modules
 node_js:
   - "0.10"
   - "0.12"
