@@ -16,4 +16,6 @@ describe('node-sass 2.x', function () {
 
   require('../test/test-render')(sass);
   require('../test/test-renderSync')(sass);
+
+  require('../test/test-sourceMap')(sass);
 });

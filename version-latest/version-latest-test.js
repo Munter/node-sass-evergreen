@@ -18,4 +18,6 @@ describe('node-sass latest', function () {
 
   require('../test/test-render')(sass);
   require('../test/test-renderSync')(sass);
+
+  require('../test/test-sourceMap')(sass);
 });

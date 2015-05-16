@@ -16,8 +16,12 @@ function polyFillOptions(options, cb) {
     successCallback = function(result) {
       result.css = new Buffer(result.css, 'utf8');
 
-      if (result.map === '{}') {
-        result.map = undefined;
+      if (result.map) {
+        if (result.map === '{}') {
+          result.map = undefined;
+        } else {
+          result.map = new Buffer(result.map, 'utf8');
+        }
       }
 
       cb(null, result);
