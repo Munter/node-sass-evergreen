@@ -34,8 +34,7 @@ function polyFillOptions(options, cb) {
 
   return extend({}, options, {
     success: successCallback,
-    error: errorCallback,
-    sourceComments: options.sourceMap ? 'map' : (options.sourceComments === true ? 'normal' : false)
+    error: errorCallback
   });
 }
 

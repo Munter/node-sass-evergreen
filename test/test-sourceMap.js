@@ -5,7 +5,34 @@ var expect = require('unexpected');
 module.exports = function (sass) {
   describe('sourceMap', function () {
 
-    it('should use the outFile setting to augment... stuff', function (done) {
+    it('accord use case', function (done) {
+      sass.render({
+        data: 'body { background: hotpink; }',
+        omitSourceMapUrl: true,
+        outFile: 'foo.css',
+        sourceMap: true
+      }, function (err, result) {
+        expect(err, 'to be null');
+        expect(result, 'to exhaustively satisfy', {
+          css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: hotpink; }\n'),
+          map: expect.it('when decoded as', 'utf8', JSON.parse, 'to satisfy', {
+            version: 3,
+            file: 'foo.css',
+            sources: ['stdin'],
+            sourcesContent: [],
+            mappings: expect.it('to be a string'),
+            names: []
+          }),
+          stats: expect.it('to satisfy', {
+            includedFiles: []
+          })
+        });
+
+        done();
+      });
+    });
+
+    it('accord use case with sourceComments', function (done) {
       sass.render({
         data: 'body { background: hotpink; }',
         sourceComments: true,
@@ -32,5 +59,6 @@ module.exports = function (sass) {
         done();
       });
     });
+
   });
 };
