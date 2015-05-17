@@ -40,7 +40,7 @@ function polyFillOptions(options, cb) {
   if (cb) {
 
     successCallback = function(css) {
-      var sourceMap = stats.sourceMap && new Buffer(stats.sourceMap, 'utf8');
+      var sourceMap = stats.sourceMap && new Buffer(stats.sourceMap, 'utf8') || undefined;
 
       delete stats.sourceMap;
 

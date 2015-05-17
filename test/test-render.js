@@ -59,5 +59,30 @@ module.exports = function (sass) {
       });
 
     });
+
+    describe('using file', function () {
+      it('should render basic example', function (done) {
+        sass.render({
+          file: 'fixtures/basic.scss'
+        }, function (err, result) {
+          expect(err, 'to be null');
+          expect(result, 'to exhaustively satisfy', {
+            css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: red; }\n'),
+            map: undefined,
+            stats: {
+              entry: /fixtures\/basic.scss$/,
+              start: expect.it('to be a number'),
+              includedFiles: [
+                /fixtures\/basic.scss$/
+              ],
+              end: expect.it('to be a number'),
+              duration: expect.it('to be a number')
+            }
+          });
+
+          done();
+        });
+      });
+    });
   });
 };
