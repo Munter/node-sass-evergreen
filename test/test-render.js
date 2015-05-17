@@ -61,6 +61,7 @@ module.exports = function (sass) {
     });
 
     describe('using file', function () {
+
       it('should render basic example', function (done) {
         sass.render({
           file: 'fixtures/basic.scss'
@@ -94,10 +95,10 @@ module.exports = function (sass) {
             css: expect.it('when decoded as', 'utf8', 'to be', '/* line 3, ' + process.cwd() + '/fixtures/basic.scss */\nbody {\n  background: red; }\n'),
             map: undefined,
             stats: {
-              entry: /fixtures\/basic.scss$/,
+              entry: /fixtures\/basic\.scss$/,
               start: expect.it('to be a number'),
               includedFiles: [
-                /fixtures\/basic.scss$/
+                /fixtures\/basic\.scss$/
               ],
               end: expect.it('to be a number'),
               duration: expect.it('to be a number')
@@ -107,6 +108,21 @@ module.exports = function (sass) {
           done();
         });
       });
+
+      it('should fail on syntax errors', function (done) {
+        sass.render({
+          file: 'fixtures/syntax-error.scss',
+        }, function (err, result) {
+          expect(err, 'to satisfy', {
+            message: 'invalid top-level expression',
+            line: 3,
+            file: /fixtures\/syntax-error\.scss$/
+          });
+
+          done();
+        });
+      });
+
     });
   });
 };
