@@ -28,6 +28,7 @@ function qualifyError(err) {
 function polyFillOptions(options, cb) {
   var successCallback, errorCallback;
   var stats = {};
+  var sourceMap = options.sourceMap && (options.outFile || options.sourceMap);
 
   if (typeof options.importer === 'function' || Array.isArray(options.importer)) {
     throw new Error('options.importer is not supported in node-sass ' + version);
@@ -35,6 +36,14 @@ function polyFillOptions(options, cb) {
 
   if (options.indentedSyntax === true) {
     throw new Error('options.indentedSyntax is not supported in node-sass ' + version);
+  }
+
+  if (options.sourceComments && sourceMap) {
+    throw new Error('options.sourceComments is not supported in node-sass ' + version + ' when using options.sourceMap');
+  }
+
+  if (sourceMap && !options.file) {
+    throw new Error('options.sourceMap is not supported in node-sass ' + version + ' when using options.data');
   }
 
   if (cb) {
@@ -64,7 +73,8 @@ function polyFillOptions(options, cb) {
     success: successCallback,
     error: errorCallback,
     stats: stats,
-    sourceComments: options.sourceMap ? 'map' : (options.sourceComments === true ? 'normal' : 'none')
+    sourceComments: options.sourceMap ? 'map' : (options.sourceComments === true ? 'normal' : 'none'),
+    sourceMap: sourceMap
   });
 }
 

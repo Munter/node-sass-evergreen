@@ -23,4 +23,22 @@ try {
 
   require('../test/test-render')(sass);
   require('../test/test-renderSync')(sass);
+
+  require('../test/test-sourceMap')(sass, {
+    data: false
+  });
+
+  describe('sourceMap override', function () {
+    describe('using `data`', function () {
+
+      it('accord use case', function () {
+        expect(function () {
+          sass.render({
+            data: 'body { background: hotpink; }',
+            sourceMap: true
+          });
+        }, 'to throw', /^options.sourceMap is not supported/);
+      });
+    });
+  });
 });
