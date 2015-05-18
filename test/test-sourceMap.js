@@ -71,11 +71,39 @@ module.exports = function (sass, options) {
     if (options.file !== false) {
       describe('using `file`', function () {
 
-        it('accord use case', function (done) {
+        it('basic', function (done) {
           sass.render({
             file: 'fixtures/basic.scss',
-            omitSourceMapUrl: true,
             outFile: 'foo.css',
+            sourceMap: true
+          }, function (err, result) {
+            expect(err, 'to be null');
+            expect(result, 'to exhaustively satisfy', {
+              css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: red; }\n\n/*# sourceMappingURL=foo.css.map */'),
+              map: expect.it('when decoded as', 'utf8', JSON.parse, 'to satisfy', {
+                version: 3,
+                file: 'foo.css',
+                sources: ['stdin'],
+                sourcesContent: [],
+                mappings: expect.it('to be a string'),
+                names: []
+              }),
+              stats: expect.it('to satisfy', {
+                includedFiles: [
+                  /fixtures\/basic\.scss$/
+                ]
+              })
+            });
+
+            done();
+          });
+        });
+
+        it('basic, omitSourceMapUrl', function (done) {
+          sass.render({
+            file: 'fixtures/basic.scss',
+            outFile: 'foo.css',
+            omitSourceMapUrl: true,
             sourceMap: true
           }, function (err, result) {
             expect(err, 'to be null');
@@ -100,7 +128,7 @@ module.exports = function (sass, options) {
           });
         });
 
-        it('accord use case with sourceComments', function (done) {
+        it('basic, sourceComments, omitSourceMapUrl', function (done) {
           sass.render({
             file: 'fixtures/basic.scss',
             sourceComments: true,

@@ -2,6 +2,7 @@
 
 var sass = require('node-sass');
 var extend = require('extend');
+var Path = require('path');
 
 var version = require('node-sass/package.json').version;
 
@@ -74,7 +75,7 @@ function polyFillOptions(options, cb) {
     error: errorCallback,
     stats: stats,
     sourceComments: options.sourceMap ? 'map' : (options.sourceComments === true ? 'normal' : 'none'),
-    sourceMap: sourceMap
+    sourceMap: sourceMap && (Path.relative(Path.basename(options.file), sourceMap) + '.map')
   });
 }
 

@@ -67,7 +67,7 @@ function polyFillOptions(options, cb) {
     success: successCallback,
     error: errorCallback,
     stats: stats,
-    sourceMap: sourceMap
+    sourceMap: sourceMap && (sourceMap + '.map')
   });
 
   return finalOptions;
