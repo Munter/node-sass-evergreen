@@ -32,7 +32,6 @@ function qualifyError(err) {
 
 function polyFillOptions(options, cb) {
   var successCallback, errorCallback;
-  var sourcePromise = when.resolve();
   var stats = {};
   var sourceMap = options.sourceMap && (options.outFile || options.sourceMap);
 
