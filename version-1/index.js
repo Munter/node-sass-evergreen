@@ -43,9 +43,17 @@ function polyFillOptions(options, cb) {
   if (cb) {
 
     successCallback = function(css) {
-      var sourceMap = stats.sourceMap && new Buffer(stats.sourceMap, 'utf8') || undefined;
+      var sourceMap = stats.sourceMap || undefined;
 
       delete stats.sourceMap;
+
+      if (sourceMap) {
+        var tmpMap = JSON.parse(sourceMap);
+
+        tmpMap.file = options.outFile;
+
+        sourceMap = JSON.stringify(tmpMap);
+      }
 
       if (options.sourceComments === true && options.data) {
         css = css.replace(', source string */', ', stdin */');
@@ -53,7 +61,7 @@ function polyFillOptions(options, cb) {
 
       cb(null, {
         css: new Buffer(css, 'utf8'),
-        map: sourceMap,
+        map: sourceMap && new Buffer(sourceMap, 'utf8'),
         stats: stats
       });
     };

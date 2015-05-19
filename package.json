@@ -34,7 +34,7 @@
     "jshint": "^2.7.0",
     "mocha": "^2.2.4",
     "mocha-lcov-reporter": "0.0.2",
-    "unexpected": "^7.0.5"
+    "unexpected": "^7.4.2"
   },
   "dependencies": {
     "extend": "^2.0.1",

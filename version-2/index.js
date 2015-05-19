@@ -20,7 +20,11 @@ function polyFillOptions(options, cb) {
         if (result.map === '{}') {
           result.map = undefined;
         } else {
-          result.map = new Buffer(result.map, 'utf8');
+          var tmpMap = JSON.parse(result.map);
+
+          tmpMap.sources[0] = options.file || 'stdin';
+
+          result.map = new Buffer(JSON.stringify(tmpMap), 'utf8');
         }
       }
 
