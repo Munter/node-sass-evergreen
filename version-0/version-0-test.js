@@ -41,21 +41,22 @@ describe('node-sass 0.x', function () {
           sourceMap: true
         }, function (err, result) {
           expect(err, 'to be null');
-          expect(result, 'to exhaustively satisfy', {
+          expect(result, 'to satisfy', {
             css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: red; }\n\n/*# sourceMappingURL=foo.css.map */'),
-            map: expect.it('when decoded as', 'utf8', JSON.parse, 'to satisfy', {
-              version: 3,
-              file: 'foo.css',
-              sources: ['stdin'],
-              sourcesContent: [],
-              mappings: expect.it('to be a string'),
-              names: []
-            }),
             stats: expect.it('to satisfy', {
               includedFiles: [
                 /fixtures\/basic\.scss$/
               ]
             })
+          });
+
+          expect(JSON.parse(result.map.toString('utf8')), 'to exhaustively satisfy', {
+            version: 3,
+            file: 'foo.css',
+            sources: ['fixtures/basic.scss'],
+            sourcesContent: [],
+            mappings: expect.it('to be a string'),
+            names: []
           });
 
           done();
@@ -70,21 +71,22 @@ describe('node-sass 0.x', function () {
           sourceMap: true
         }, function (err, result) {
           expect(err, 'to be null');
-          expect(result, 'to exhaustively satisfy', {
+          expect(result, 'to satisfy', {
             css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: red; }\n'),
-            map: expect.it('when decoded as', 'utf8', JSON.parse, 'to satisfy', {
-              version: 3,
-              file: 'foo.css',
-              sources: ['stdin'],
-              sourcesContent: [],
-              mappings: expect.it('to be a string'),
-              names: []
-            }),
             stats: expect.it('to satisfy', {
               includedFiles: [
                 /fixtures\/basic\.scss$/
               ]
             })
+          });
+
+          expect(JSON.parse(result.map.toString('utf8')), 'to exhaustively satisfy', {
+            version: 3,
+            file: 'foo.css',
+            sources: ['fixtures/basic.scss'],
+            sourcesContent: [],
+            mappings: expect.it('to be a string'),
+            names: []
           });
 
           done();
@@ -100,6 +102,40 @@ describe('node-sass 0.x', function () {
             sourceMap: true
           });
         }, 'to throw', /^options.sourceComments is not supported/);
+      });
+
+      it('basic, sourceMapContents', function (done) {
+        sass.render({
+          file: 'fixtures/basic.scss',
+          omitSourceMapUrl: true,
+          outFile: 'foo.css',
+          sourceMap: true,
+          sourceMapContents: true
+        }, function (err, result) {
+          expect(err, 'to be null');
+
+          expect(result, 'to satisfy', {
+            css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: red; }\n'),
+            stats: expect.it('to satisfy', {
+              includedFiles: [
+                /fixtures\/basic\.scss$/
+              ]
+            })
+          });
+
+          expect(JSON.parse(result.map.toString('utf8')), 'to exhaustively satisfy', {
+            version: 3,
+            file: 'foo.css',
+            sources: ['fixtures/basic.scss'],
+            sourcesContent: [
+              '$red: red;\n\nbody {\n  background: $red;\n}\n'
+            ],
+            mappings: expect.it('to be a string'),
+            names: []
+          });
+
+          done();
+        });
       });
 
     });

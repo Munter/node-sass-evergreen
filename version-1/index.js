@@ -47,10 +47,7 @@ function polyFillOptions(options, cb) {
 
   if (cb) {
     if (sourceMap && options.sourceMapContents) {
-      sourcePromise = node.lift(fs.readFile)(options.file, 'utf8')
-        .catch(function () {
-          return undefined;
-        });
+      sourcePromise = node.lift(fs.readFile)(options.file, 'utf8');
     }
 
     successCallback = function(css) {

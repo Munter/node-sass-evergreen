@@ -4,6 +4,10 @@ var sass = require('node-sass');
 var extend = require('extend');
 var Path = require('path');
 
+var fs = require('fs');
+var when = require('when');
+var node = require('when/node');
+
 var version = require('node-sass/package.json').version;
 
 function typesError() {
@@ -28,6 +32,7 @@ function qualifyError(err) {
 
 function polyFillOptions(options, cb) {
   var successCallback, errorCallback;
+  var sourcePromise = when.resolve();
   var stats = {};
   var sourceMap = options.sourceMap && (options.outFile || options.sourceMap);
 
@@ -48,9 +53,20 @@ function polyFillOptions(options, cb) {
   }
 
   if (cb) {
+    if (sourceMap && options.sourceMapContents) {
+      sourcePromise = node.lift(fs.readFile)(options.file, 'utf8');
+    }
 
     successCallback = function(css) {
-      var sourceMap = stats.sourceMap && new Buffer(stats.sourceMap, 'utf8') || undefined;
+      var sourceMap;
+
+      if (stats.sourceMap) {
+        sourceMap = JSON.parse(stats.sourceMap);
+
+        sourceMap.sourcesContent = sourceMap.sourcesContent || [];
+
+        sourceMap.file = options.outFile;
+      }
 
       delete stats.sourceMap;
 
@@ -58,11 +74,19 @@ function polyFillOptions(options, cb) {
         css = css.replace(', source string */', ', stdin */');
       }
 
-      cb(null, {
-        css: new Buffer(css, 'utf8'),
-        map: sourceMap,
-        stats: stats
-      });
+      var doneCallback = function () {
+        cb(null, {
+          css: new Buffer(css, 'utf8'),
+          map: sourceMap && new Buffer(JSON.stringify(sourceMap), 'utf8'),
+          stats: stats
+        });
+      };
+
+      sourcePromise.then(function (source) {
+        if (sourceMap && options.sourceMapContents) {
+          sourceMap.sourcesContent.unshift(source);
+        }
+      }).done(doneCallback, doneCallback);
     };
 
     errorCallback = function (err) {
