@@ -28,8 +28,6 @@ function polyFillOptions(options, cb) {
             tmpMap.sources = tmpMap.sources.map(function (sourcePath) {
               return Path.join(dir, sourcePath);
             });
-          } else {
-            tmpMap.sources.push('stdin');
           }
 
           result.map = new Buffer(JSON.stringify(tmpMap), 'utf8');
