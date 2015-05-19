@@ -2,6 +2,7 @@
 
 var sass = require('node-sass');
 var extend = require('extend');
+var Path = require('path');
 
 var version = require('node-sass/package.json').version;
 
@@ -22,7 +23,14 @@ function polyFillOptions(options, cb) {
         } else {
           var tmpMap = JSON.parse(result.map);
 
-          tmpMap.sources[0] = options.file || 'stdin';
+          if (tmpMap.sources.length) {
+            var dir = Path.dirname(options.file);
+            tmpMap.sources = tmpMap.sources.map(function (sourcePath) {
+              return Path.join(dir, sourcePath);
+            });
+          } else {
+            tmpMap.sources.push('stdin');
+          }
 
           result.map = new Buffer(JSON.stringify(tmpMap), 'utf8');
         }

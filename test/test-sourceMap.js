@@ -200,6 +200,56 @@ module.exports = function (sass, options) {
           });
         });
 
+        it('imports, sourceMapContents', function (done) {
+          sass.render({
+            file: 'fixtures/imports.scss',
+            omitSourceMapUrl: true,
+            outFile: 'foo.css',
+            sourceMap: true,
+            sourceMapContents: true
+          }, function (err, result) {
+            expect(err, 'to be null');
+
+            expect(result, 'to satisfy', {
+              css: expect.it('when decoded as', 'utf8', 'to be', [
+                'h1 {\n  background: blue; }\n',
+                'h2 {\n  background: green; }\n',
+                'h3 {\n  background: yellow; }\n',
+                'body {\n  background: hotpink; }\n',
+              ].join('\n')),
+              stats: expect.it('to satisfy', {
+                includedFiles: [
+                  /fixtures\/import-1\.scss$/,
+                  /fixtures\/import-2\.scss$/,
+                  /fixtures\/import-3\.scss$/,
+                  /fixtures\/imports\.scss$/
+                ]
+              })
+            });
+
+            expect(JSON.parse(result.map.toString('utf8')), 'to exhaustively satisfy', {
+              version: 3,
+              file: 'foo.css',
+              sources: [
+                'fixtures/imports.scss',
+                'fixtures/import-1.scss',
+                'fixtures/import-2.scss',
+                'fixtures/import-3.scss'
+              ],
+              sourcesContent: [
+                '@import \'import-1\';\n@import \'import-2\';\n@import \'import-3\';\n\nbody {\n  background: hotpink;\n}\n',
+                'h1 {\n  background: blue;\n}\n',
+                'h2 {\n  background: green;\n}\n',
+                'h3 {\n  background: yellow;\n}\n',
+              ],
+              mappings: expect.it('to be a string'),
+              names: []
+            });
+
+            done();
+          });
+        });
+
       });
     }
 

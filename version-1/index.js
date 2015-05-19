@@ -73,11 +73,16 @@ function polyFillOptions(options, cb) {
         });
       };
 
-      sourcePromise.then(function (source) {
-        if (sourceMap && options.sourceMapContents) {
-          sourceMap.sourcesContent.unshift(source);
-        }
-      }).done(doneCallback, doneCallback);
+      if (sourceMap && options.sourceMapContents) {
+        var readFile = node.lift(fs.readFile);
+        when.map(sourceMap.sources, function (path) {
+          return readFile(path, 'utf8');
+        }).then(function (result) {
+          sourceMap.sourcesContent = result;
+        }).done(doneCallback, doneCallback);
+      } else {
+        doneCallback();
+      }
     };
 
     errorCallback = function (err) {
