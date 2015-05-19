@@ -166,13 +166,13 @@ module.exports = function (sass, options) {
           });
         });
 
-        it.skip('basic, sourceMapContents', function (done) {
+        it('basic, sourceMapContents', function (done) {
           sass.render({
             file: 'fixtures/basic.scss',
-            // omitSourceMapUrl: true,
+            omitSourceMapUrl: true,
             outFile: 'foo.css',
             sourceMap: true,
-            // sourceMapContents: true
+            sourceMapContents: true
           }, function (err, result) {
             expect(err, 'to be null');
 
@@ -189,7 +189,9 @@ module.exports = function (sass, options) {
               version: 3,
               file: 'foo.css',
               sources: ['fixtures/basic.scss'],
-              sourcesContent: [],
+              sourcesContent: [
+                '$red: red;\n\nbody {\n  background: $red;\n}\n'
+              ],
               mappings: expect.it('to be a string'),
               names: []
             });
