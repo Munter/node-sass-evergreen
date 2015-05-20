@@ -8,7 +8,7 @@ module.exports = function (sass, options) {
   describe('sourceMap', function () {
 
     if (options.data !== false) {
-      describe('using `data`', function () {
+      describe('render using `data`', function () {
 
         it('basic', function (done) {
           sass.render({
@@ -180,6 +180,159 @@ module.exports = function (sass, options) {
           });
         });
 
+      });
+
+      describe('renderSync using `data`', function () {
+
+        it('basic', function () {
+          var result = sass.renderSync({
+            data: 'body { background: hotpink; }',
+            outFile: 'foo.css',
+            sourceMap: true
+          });
+
+          expect(result, 'to satisfy', {
+            css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: hotpink; }\n\n/*# sourceMappingURL=foo.css.map */'),
+            stats: expect.it('to satisfy', {
+              includedFiles: []
+            })
+          });
+
+          expect(JSON.parse(result.map.toString('utf8')), 'to exhaustively satisfy', {
+            version: 3,
+            file: 'foo.css',
+            sources: ['stdin'],
+            sourcesContent: [],
+            mappings: expect.it('to be a string'),
+            names: []
+          });
+        });
+
+        it('basic, omitSourceMapUrl', function () {
+          var result = sass.renderSync({
+            data: 'body { background: hotpink; }',
+            omitSourceMapUrl: true,
+            outFile: 'foo.css',
+            sourceMap: true
+          });
+
+          expect(result, 'to satisfy', {
+            css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: hotpink; }\n'),
+            stats: expect.it('to satisfy', {
+              includedFiles: []
+            })
+          });
+
+          expect(JSON.parse(result.map.toString('utf8')), 'to exhaustively satisfy', {
+            version: 3,
+            file: 'foo.css',
+            sources: ['stdin'],
+            sourcesContent: [],
+            mappings: expect.it('to be a string'),
+            names: []
+          });
+        });
+
+        it('basic, omitSourceMapUrl, sourceComments', function () {
+          var result = sass.renderSync({
+            data: 'body { background: hotpink; }',
+            omitSourceMapUrl: true,
+            sourceComments: true,
+            outFile: 'foo.css',
+            sourceMap: true
+          });
+
+          expect(result, 'to satisfy', {
+            css: expect.it('when decoded as', 'utf8', 'to be', '/* line 1, stdin */\nbody {\n  background: hotpink; }\n'),
+            stats: expect.it('to satisfy', {
+              includedFiles: []
+            })
+          });
+
+          expect(JSON.parse(result.map.toString('utf8')), 'to exhaustively satisfy', {
+            version: 3,
+            file: 'foo.css',
+            sources: ['stdin'],
+            sourcesContent: [],
+            mappings: expect.it('to be a string'),
+            names: []
+          });
+        });
+
+
+        it('basic, sourceMapContents', function () {
+          var result = sass.renderSync({
+            data: 'body { background: hotpink; }',
+            omitSourceMapUrl: true,
+            outFile: 'foo.css',
+            sourceMap: true,
+            sourceMapContents: true
+          });
+
+          expect(result, 'to satisfy', {
+            css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: hotpink; }\n'),
+            stats: expect.it('to satisfy', {
+              includedFiles: []
+            })
+          });
+
+          expect(JSON.parse(result.map.toString('utf8')), 'to exhaustively satisfy', {
+            version: 3,
+            file: 'foo.css',
+            sources: ['stdin'],
+            sourcesContent: [
+              'body { background: hotpink; }'
+            ],
+            mappings: expect.it('to be a string'),
+            names: []
+          });
+        });
+
+        it('imports, sourceMapContents', function () {
+          var result = sass.renderSync({
+            data: '@import \'import-1\';\n@import \'import-2\';\n@import \'import-3\';\n\nbody {\n  background: hotpink;\n}\n',
+            omitSourceMapUrl: true,
+            outFile: 'foo.css',
+            sourceMap: true,
+            sourceMapContents: true,
+            includePaths: ['fixtures']
+          });
+
+          expect(result, 'to satisfy', {
+            css: expect.it('when decoded as', 'utf8', 'to be', [
+              'h1 {\n  background: blue; }\n',
+              'h2 {\n  background: green; }\n',
+              'h3 {\n  background: yellow; }\n',
+              'body {\n  background: hotpink; }\n',
+            ].join('\n')),
+            stats: expect.it('to satisfy', {
+              includedFiles: [
+                /fixtures\/import-1\.scss$/,
+                /fixtures\/import-2\.scss$/,
+                /fixtures\/import-3\.scss$/
+              ]
+            })
+          });
+
+          expect(JSON.parse(result.map.toString('utf8')), 'to exhaustively satisfy', {
+            version: 3,
+            file: 'foo.css',
+            sources: [
+              'stdin',
+              'fixtures/import-1.scss',
+              'fixtures/import-2.scss',
+              'fixtures/import-3.scss'
+            ],
+            sourcesContent: [
+              '@import \'import-1\';\n@import \'import-2\';\n@import \'import-3\';\n\nbody {\n  background: hotpink;\n}\n',
+              'h1 {\n  background: blue;\n}\n',
+              'h2 {\n  background: green;\n}\n',
+              'h3 {\n  background: yellow;\n}\n',
+            ],
+            mappings: expect.it('to be a string'),
+            names: []
+          });
+        });
 
       });
     }
