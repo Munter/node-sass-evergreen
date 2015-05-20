@@ -10,7 +10,35 @@ module.exports = function (sass, options) {
     if (options.data !== false) {
       describe('using `data`', function () {
 
-        it('accord use case', function (done) {
+        it('basic', function (done) {
+          sass.render({
+            data: 'body { background: hotpink; }',
+            outFile: 'foo.css',
+            sourceMap: true
+          }, function (err, result) {
+            expect(err, 'to be null');
+
+            expect(result, 'to satisfy', {
+              css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: hotpink; }\n\n/*# sourceMappingURL=foo.css.map */'),
+              stats: expect.it('to satisfy', {
+                includedFiles: []
+              })
+            });
+
+            expect(JSON.parse(result.map.toString('utf8')), 'to exhaustively satisfy', {
+              version: 3,
+              file: 'foo.css',
+              sources: ['stdin'],
+              sourcesContent: [],
+              mappings: expect.it('to be a string'),
+              names: []
+            });
+
+            done();
+          });
+        });
+
+        it('basic, omitSourceMapUrl', function (done) {
           sass.render({
             data: 'body { background: hotpink; }',
             omitSourceMapUrl: true,
@@ -39,11 +67,11 @@ module.exports = function (sass, options) {
           });
         });
 
-        it('accord use case with sourceComments', function (done) {
+        it('basic, omitSourceMapUrl, sourceComments', function (done) {
           sass.render({
             data: 'body { background: hotpink; }',
-            sourceComments: true,
             omitSourceMapUrl: true,
+            sourceComments: true,
             outFile: 'foo.css',
             sourceMap: true
           }, function (err, result) {
@@ -68,6 +96,90 @@ module.exports = function (sass, options) {
             done();
           });
         });
+
+
+        it('basic, sourceMapContents', function (done) {
+          sass.render({
+            data: 'body { background: hotpink; }',
+            omitSourceMapUrl: true,
+            outFile: 'foo.css',
+            sourceMap: true,
+            sourceMapContents: true
+          }, function (err, result) {
+            expect(err, 'to be null');
+
+            expect(result, 'to satisfy', {
+              css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: hotpink; }\n'),
+              stats: expect.it('to satisfy', {
+                includedFiles: []
+              })
+            });
+
+            expect(JSON.parse(result.map.toString('utf8')), 'to exhaustively satisfy', {
+              version: 3,
+              file: 'foo.css',
+              sources: ['stdin'],
+              sourcesContent: [
+                'body { background: hotpink; }'
+              ],
+              mappings: expect.it('to be a string'),
+              names: []
+            });
+
+            done();
+          });
+        });
+
+        it('imports, sourceMapContents', function (done) {
+          sass.render({
+            data: '@import \'import-1\';\n@import \'import-2\';\n@import \'import-3\';\n\nbody {\n  background: hotpink;\n}\n',
+            omitSourceMapUrl: true,
+            outFile: 'foo.css',
+            sourceMap: true,
+            sourceMapContents: true,
+            includePaths: ['fixtures']
+          }, function (err, result) {
+            expect(err, 'to be null');
+
+            expect(result, 'to satisfy', {
+              css: expect.it('when decoded as', 'utf8', 'to be', [
+                'h1 {\n  background: blue; }\n',
+                'h2 {\n  background: green; }\n',
+                'h3 {\n  background: yellow; }\n',
+                'body {\n  background: hotpink; }\n',
+              ].join('\n')),
+              stats: expect.it('to satisfy', {
+                includedFiles: [
+                  /fixtures\/import-1\.scss$/,
+                  /fixtures\/import-2\.scss$/,
+                  /fixtures\/import-3\.scss$/
+                ]
+              })
+            });
+
+            expect(JSON.parse(result.map.toString('utf8')), 'to exhaustively satisfy', {
+              version: 3,
+              file: 'foo.css',
+              sources: [
+                'stdin',
+                'fixtures/import-1.scss',
+                'fixtures/import-2.scss',
+                'fixtures/import-3.scss'
+              ],
+              sourcesContent: [
+                '@import \'import-1\';\n@import \'import-2\';\n@import \'import-3\';\n\nbody {\n  background: hotpink;\n}\n',
+                'h1 {\n  background: blue;\n}\n',
+                'h2 {\n  background: green;\n}\n',
+                'h3 {\n  background: yellow;\n}\n',
+              ],
+              mappings: expect.it('to be a string'),
+              names: []
+            });
+
+            done();
+          });
+        });
+
 
       });
     }
