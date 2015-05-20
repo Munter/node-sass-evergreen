@@ -46,10 +46,6 @@ function polyFillOptions(options, cb) {
   }
 
   if (cb) {
-    if (sourceMap && options.sourceMapContents) {
-      sourcePromise = node.lift(fs.readFile)(options.file, 'utf8');
-    }
-
     successCallback = function(css) {
       var sourceMap;
 
@@ -60,10 +56,6 @@ function polyFillOptions(options, cb) {
       }
 
       delete stats.sourceMap;
-
-      if (options.sourceComments === true && options.data) {
-        css = css.replace(', source string */', ', stdin */');
-      }
 
       var doneCallback = function () {
         cb(null, {
@@ -114,6 +106,7 @@ module.exports = extend({}, sass, {
   renderSync: function (options) {
     var compatOptions = polyFillOptions(options);
     var result;
+    var sourceMap;
 
     try {
       result = sass.renderSync(compatOptions);
@@ -129,13 +122,23 @@ module.exports = extend({}, sass, {
       stats: compatOptions.stats
     };
 
-    if ('sourceMap' in compatOptions.stats) {
-      extend(returnValue, {
-        map: compatOptions.stats.sourceMap && new Buffer(compatOptions.stats.sourceMap, 'utf8'),
-      });
+    if (returnValue.stats.sourceMap) {
+      sourceMap = JSON.parse(returnValue.stats.sourceMap);
 
-      delete returnValue.stats.sourceMap;
+      sourceMap.file = options.outFile;
+
+      if (options.sourceMapContents) {
+        sourceMap.sourcesContent = sourceMap.sources.map(function (path) {
+          return fs.readFileSync(path, 'utf8');
+        });
+      }
+
+      extend(returnValue, {
+        map: sourceMap && new Buffer(JSON.stringify(sourceMap), 'utf8'),
+      });
     }
+
+    delete returnValue.stats.sourceMap;
 
     return returnValue;
   },

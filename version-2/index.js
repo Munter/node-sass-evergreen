@@ -10,37 +10,41 @@ function typesError() {
   throw new Error('types are not available in node-sass ' + version);
 }
 
+function qualifyResult(originalResult, options) {
+  var result = extend({}, originalResult);
+
+  result.css = new Buffer(result.css, 'utf8');
+
+  if (result.map) {
+    if (result.map === '{}') {
+      result.map = undefined;
+    } else {
+      var tmpMap = JSON.parse(result.map);
+
+      if (tmpMap.sources.length) {
+        var dir = Path.dirname(options.file);
+        tmpMap.sources = tmpMap.sources.map(function (sourcePath) {
+          return Path.join(dir, sourcePath);
+        });
+      }
+
+      result.map = new Buffer(JSON.stringify(tmpMap), 'utf8');
+    }
+  }
+
+  return result;
+}
+
 function polyFillOptions(options, cb) {
   var successCallback, errorCallback;
 
-  if (cb) {
-    successCallback = function(result) {
-      result.css = new Buffer(result.css, 'utf8');
+  successCallback = function(result) {
+    cb(null, qualifyResult(result, options));
+  };
 
-      if (result.map) {
-        if (result.map === '{}') {
-          result.map = undefined;
-        } else {
-          var tmpMap = JSON.parse(result.map);
-
-          if (tmpMap.sources.length) {
-            var dir = Path.dirname(options.file);
-            tmpMap.sources = tmpMap.sources.map(function (sourcePath) {
-              return Path.join(dir, sourcePath);
-            });
-          }
-
-          result.map = new Buffer(JSON.stringify(tmpMap), 'utf8');
-        }
-      }
-
-      cb(null, result);
-    };
-
-    errorCallback = function (err) {
-      cb(err);
-    };
-  }
+  errorCallback = function (err) {
+    cb(err);
+  };
 
   return extend({}, options, {
     success: successCallback,
@@ -71,13 +75,13 @@ module.exports = extend({}, sass, {
       throw extend(error, errJson);
     }
 
-    result.css = new Buffer(result.css, 'utf8');
+    var qualityResult = qualifyResult(result, options);
 
-    if (result.map === '{}') {
-      delete result.map;
+    if (typeof qualityResult.map === 'undefined') {
+      delete qualityResult.map;
     }
 
-    return result;
+    return qualityResult;
   },
 
   types: {
