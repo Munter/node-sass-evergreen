@@ -6,6 +6,23 @@ module.exports = function (sass, options) {
   options = options || {};
 
   describe('sourceMap', function () {
+    if (options.data === false) {
+
+      describe('sourceMap override', function () {
+        describe('using `data`', function () {
+
+          it('accord use case', function () {
+            expect(function () {
+              sass.render({
+                data: 'body { background: hotpink; }',
+                sourceMap: true
+              });
+            }, 'to throw', /^options.sourceMap is not supported/);
+          });
+        });
+      });
+
+    }
 
     if (options.data !== false) {
       describe('render using `data`', function () {
@@ -20,6 +37,7 @@ module.exports = function (sass, options) {
 
             expect(result, 'to satisfy', {
               css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: hotpink; }\n\n/*# sourceMappingURL=foo.css.map */'),
+              map: expect.it('to be a', Buffer),
               stats: expect.it('to satisfy', {
                 includedFiles: []
               })
@@ -49,6 +67,7 @@ module.exports = function (sass, options) {
 
             expect(result, 'to satisfy', {
               css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: hotpink; }\n'),
+              map: expect.it('to be a', Buffer),
               stats: expect.it('to satisfy', {
                 includedFiles: []
               })
@@ -97,7 +116,6 @@ module.exports = function (sass, options) {
           });
         });
 
-
         it('basic, sourceMapContents', function (done) {
           sass.render({
             data: 'body { background: hotpink; }',
@@ -110,6 +128,7 @@ module.exports = function (sass, options) {
 
             expect(result, 'to satisfy', {
               css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: hotpink; }\n'),
+              map: expect.it('to be a', Buffer),
               stats: expect.it('to satisfy', {
                 includedFiles: []
               })
@@ -148,6 +167,7 @@ module.exports = function (sass, options) {
                 'h3 {\n  background: yellow; }\n',
                 'body {\n  background: hotpink; }\n',
               ].join('\n')),
+              map: expect.it('to be a', Buffer),
               stats: expect.it('to satisfy', {
                 includedFiles: [
                   /fixtures\/import-1\.scss$/,
@@ -193,6 +213,7 @@ module.exports = function (sass, options) {
 
           expect(result, 'to satisfy', {
             css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: hotpink; }\n\n/*# sourceMappingURL=foo.css.map */'),
+            map: expect.it('to be a', Buffer),
             stats: expect.it('to satisfy', {
               includedFiles: []
             })
@@ -218,6 +239,7 @@ module.exports = function (sass, options) {
 
           expect(result, 'to satisfy', {
             css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: hotpink; }\n'),
+            map: expect.it('to be a', Buffer),
             stats: expect.it('to satisfy', {
               includedFiles: []
             })
@@ -244,6 +266,7 @@ module.exports = function (sass, options) {
 
           expect(result, 'to satisfy', {
             css: expect.it('when decoded as', 'utf8', 'to be', '/* line 1, stdin */\nbody {\n  background: hotpink; }\n'),
+            map: expect.it('to be a', Buffer),
             stats: expect.it('to satisfy', {
               includedFiles: []
             })
@@ -271,6 +294,7 @@ module.exports = function (sass, options) {
 
           expect(result, 'to satisfy', {
             css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: hotpink; }\n'),
+            map: expect.it('to be a', Buffer),
             stats: expect.it('to satisfy', {
               includedFiles: []
             })
@@ -305,6 +329,7 @@ module.exports = function (sass, options) {
               'h3 {\n  background: yellow; }\n',
               'body {\n  background: hotpink; }\n',
             ].join('\n')),
+            map: expect.it('to be a', Buffer),
             stats: expect.it('to satisfy', {
               includedFiles: [
                 /fixtures\/import-1\.scss$/,
@@ -349,6 +374,7 @@ module.exports = function (sass, options) {
             expect(err, 'to be null');
             expect(result, 'to satisfy', {
               css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: red; }\n\n/*# sourceMappingURL=foo.css.map */'),
+              map: expect.it('to be a', Buffer),
               stats: expect.it('to satisfy', {
                 includedFiles: [
                   /fixtures\/basic\.scss$/
@@ -379,6 +405,7 @@ module.exports = function (sass, options) {
             expect(err, 'to be null');
             expect(result, 'to satisfy', {
               css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: red; }\n'),
+              map: expect.it('to be a', Buffer),
               stats: expect.it('to satisfy', {
                 includedFiles: [
                   /fixtures\/basic\.scss$/
@@ -399,37 +426,42 @@ module.exports = function (sass, options) {
           });
         });
 
-        it('basic, sourceComments, omitSourceMapUrl', function (done) {
-          sass.render({
-            file: 'fixtures/basic.scss',
-            sourceComments: true,
-            omitSourceMapUrl: true,
-            outFile: 'foo.css',
-            sourceMap: true
-          }, function (err, result) {
-            expect(err, 'to be null');
+        if (options.oldSourceComments !== true) {
 
-            expect(result, 'to satisfy', {
-              css: expect.it('when decoded as', 'utf8', 'to be', '/* line 3, ' + process.cwd() + '/fixtures/basic.scss */\nbody {\n  background: red; }\n'),
-              stats: expect.it('to satisfy', {
-                includedFiles: [
-                  /fixtures\/basic\.scss$/
-                ]
-              })
+          it('basic, sourceComments, omitSourceMapUrl', function (done) {
+            sass.render({
+              file: 'fixtures/basic.scss',
+              sourceComments: true,
+              omitSourceMapUrl: true,
+              outFile: 'foo.css',
+              sourceMap: true
+            }, function (err, result) {
+              expect(err, 'to be null');
+
+              expect(result, 'to satisfy', {
+                css: expect.it('when decoded as', 'utf8', 'to be', '/* line 3, ' + process.cwd() + '/fixtures/basic.scss */\nbody {\n  background: red; }\n'),
+                map: expect.it('to be a', Buffer),
+                stats: expect.it('to satisfy', {
+                  includedFiles: [
+                    /fixtures\/basic\.scss$/
+                  ]
+                })
+              });
+
+              expect(JSON.parse(result.map.toString('utf8')), 'to exhaustively satisfy', {
+                version: 3,
+                file: 'foo.css',
+                sources: ['fixtures/basic.scss'],
+                sourcesContent: [],
+                mappings: expect.it('to be a string'),
+                names: []
+              });
+
+              done();
             });
-
-            expect(JSON.parse(result.map.toString('utf8')), 'to exhaustively satisfy', {
-              version: 3,
-              file: 'foo.css',
-              sources: ['fixtures/basic.scss'],
-              sourcesContent: [],
-              mappings: expect.it('to be a string'),
-              names: []
-            });
-
-            done();
           });
-        });
+
+        }
 
         it('basic, sourceMapContents', function (done) {
           sass.render({
@@ -443,6 +475,7 @@ module.exports = function (sass, options) {
 
             expect(result, 'to satisfy', {
               css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: red; }\n'),
+              map: expect.it('to be a', Buffer),
               stats: expect.it('to satisfy', {
                 includedFiles: [
                   /fixtures\/basic\.scss$/
@@ -482,6 +515,7 @@ module.exports = function (sass, options) {
                 'h3 {\n  background: yellow; }\n',
                 'body {\n  background: hotpink; }\n',
               ].join('\n')),
+              map: expect.it('to be a', Buffer),
               stats: expect.it('to satisfy', {
                 includedFiles: [
                   /fixtures\/import-1\.scss$/,
@@ -529,6 +563,7 @@ module.exports = function (sass, options) {
 
           expect(result, 'to satisfy', {
             css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: red; }\n\n/*# sourceMappingURL=foo.css.map */'),
+            map: expect.it('to be a', Buffer),
             stats: expect.it('to satisfy', {
               includedFiles: [
                 /fixtures\/basic\.scss$/
@@ -557,6 +592,7 @@ module.exports = function (sass, options) {
 
           expect(result, 'to satisfy', {
             css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: red; }\n'),
+            map: expect.it('to be a', Buffer),
             stats: expect.it('to satisfy', {
               includedFiles: [
                 /fixtures\/basic\.scss$/
@@ -575,34 +611,39 @@ module.exports = function (sass, options) {
 
         });
 
-        it('basic, sourceComments, omitSourceMapUrl', function () {
-          var result = sass.renderSync({
-            file: 'fixtures/basic.scss',
-            sourceComments: true,
-            omitSourceMapUrl: true,
-            outFile: 'foo.css',
-            sourceMap: true
+        if (options.oldSourceComments !== true) {
+
+          it('basic, sourceComments, omitSourceMapUrl', function () {
+            var result = sass.renderSync({
+              file: 'fixtures/basic.scss',
+              sourceComments: true,
+              omitSourceMapUrl: true,
+              outFile: 'foo.css',
+              sourceMap: true
+            });
+
+            expect(result, 'to satisfy', {
+              css: expect.it('when decoded as', 'utf8', 'to be', '/* line 3, ' + process.cwd() + '/fixtures/basic.scss */\nbody {\n  background: red; }\n'),
+              map: expect.it('to be a', Buffer),
+              stats: expect.it('to satisfy', {
+                includedFiles: [
+                  /fixtures\/basic\.scss$/
+                ]
+              })
+            });
+
+            expect(JSON.parse(result.map.toString('utf8')), 'to exhaustively satisfy', {
+              version: 3,
+              file: 'foo.css',
+              sources: ['fixtures/basic.scss'],
+              sourcesContent: [],
+              mappings: expect.it('to be a string'),
+              names: []
+            });
+
           });
 
-          expect(result, 'to satisfy', {
-            css: expect.it('when decoded as', 'utf8', 'to be', '/* line 3, ' + process.cwd() + '/fixtures/basic.scss */\nbody {\n  background: red; }\n'),
-            stats: expect.it('to satisfy', {
-              includedFiles: [
-                /fixtures\/basic\.scss$/
-              ]
-            })
-          });
-
-          expect(JSON.parse(result.map.toString('utf8')), 'to exhaustively satisfy', {
-            version: 3,
-            file: 'foo.css',
-            sources: ['fixtures/basic.scss'],
-            sourcesContent: [],
-            mappings: expect.it('to be a string'),
-            names: []
-          });
-
-        });
+        }
 
         it('basic, sourceMapContents', function () {
           var result = sass.renderSync({
@@ -615,6 +656,7 @@ module.exports = function (sass, options) {
 
           expect(result, 'to satisfy', {
             css: expect.it('when decoded as', 'utf8', 'to be', 'body {\n  background: red; }\n'),
+            map: expect.it('to be a', Buffer),
             stats: expect.it('to satisfy', {
               includedFiles: [
                 /fixtures\/basic\.scss$/
@@ -651,6 +693,7 @@ module.exports = function (sass, options) {
               'h3 {\n  background: yellow; }\n',
               'body {\n  background: hotpink; }\n',
             ].join('\n')),
+            map: expect.it('to be a', Buffer),
             stats: expect.it('to satisfy', {
               includedFiles: [
                 /fixtures\/import-1\.scss$/,
