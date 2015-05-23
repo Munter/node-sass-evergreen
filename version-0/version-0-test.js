@@ -21,7 +21,8 @@ describe('node-sass 0.x', function () {
 
   require('../test/test-sourceMap')(sass, {
     data: false,
-    oldSourceComments: true
+    oldSourceComments: true,
+    syncFileRender: false
   });
 
 });

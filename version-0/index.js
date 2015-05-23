@@ -118,6 +118,10 @@ module.exports = extend({}, sass, {
     var compatOptions = polyFillOptions(options);
     var result;
 
+    if (compatOptions.sourceComments === 'map') {
+      throw new Error('options.sourceMap is not supported in node-sass ' + version + ' when using renderSync');
+    }
+
     try {
       result = sass.renderSync(compatOptions);
     } catch (err) {
@@ -136,13 +140,7 @@ module.exports = extend({}, sass, {
       stats: compatOptions.stats
     };
 
-    if ('sourceMap' in compatOptions.stats) {
-      extend(returnValue, {
-        map: compatOptions.stats.sourceMap && new Buffer(compatOptions.stats.sourceMap, 'utf8'),
-      });
-
-      delete returnValue.stats.sourceMap;
-    }
+    delete returnValue.stats.sourceMap;
 
     return returnValue;
   },
