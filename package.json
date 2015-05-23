@@ -10,6 +10,12 @@
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot",
     "travis": "npm run lint && npm run pretest && npm run coverage"
   },
+  "files": [
+    "lib",
+    "version-0/index.js",
+    "version-1/index.js",
+    "version-2/index.js"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/Munter/node-sass-evergreen.git"
