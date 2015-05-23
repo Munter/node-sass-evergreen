@@ -2,7 +2,7 @@
   "name": "node-sass-evergreen",
   "version": "0.0.0",
   "description": "node-sass compatibility wrapper providing nodes-sass compatibility with previous major versions",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "lint": "jshint .",
     "pretest": "for DIR in `ls -1 | grep version-`; do cd $DIR; npm install; cd ..; done",
