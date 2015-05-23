@@ -28,6 +28,9 @@
     "url": "https://github.com/Munter/node-sass-evergreen/issues"
   },
   "homepage": "https://github.com/Munter/node-sass-evergreen",
+  "peerDependencies": {
+    "node-sass": "*"
+  },
   "devDependencies": {
     "coveralls": "^2.11.2",
     "istanbul": "^0.3.13",
