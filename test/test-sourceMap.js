@@ -423,7 +423,20 @@ module.exports = function (sass, options) {
           });
         });
 
-        if (options.oldSourceComments !== true) {
+        if (options.oldSourceComments === true) {
+
+          expect(function () {
+            sass.render({
+              file: 'fixtures/basic.scss',
+              sourceComments: true,
+              omitSourceMapUrl: true,
+              outFile: 'foo.css',
+              sourceMap: true
+            });
+          }, 'to throw', /^options.sourceComments is not supported in node-sass .* when using options.sourceMap$/);
+
+
+        } else {
 
           it('basic, sourceComments, omitSourceMapUrl', function (done) {
             sass.render({
