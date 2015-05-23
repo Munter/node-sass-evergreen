@@ -6,6 +6,48 @@ node-sass-evergreen
 [![Coverage Status](https://img.shields.io/coveralls/Munter/node-sass-evergreen.svg)](https://coveralls.io/r/Munter/node-sass-evergreen?branch=master)
 [![Dependency Status](https://david-dm.org/Munter/node-sass-evergreen.svg)](https://david-dm.org/Munter/node-sass-evergreen)
 
+This project is designed to be a compatibility layer across [node-sass](https://github.com/sass/node-sass) major versions by always exposing the latest major version API, but have it work for older major versions as well.
+
+This is useful for tool integrations like task runner wrappers or any other tool plugin layers, since it allows them to implement against a single API, leave the node-sass version up to the developer of the individual project, and still be compatible even if the project is a major version ot two behind.
+
+This module is primarily targeted towards tool developer and integrators that create tools for environments they can't entirely control. If you are using node-sass directly in your own project, keep doing so.
+
+**Current API: node.sass 3.x**
+
+
+Installation and usage
+----------------------
+
+Install node-sass-evergreen as a dependency of your project, but don't install node-sass as a dependency. Chosing the specific node-sass version should be up to the consumer of your tool or plugin. You may want to install node-sass as a dev dependency in order to run local tests.
+
+```
+npm install --save node-sass-evergreen
+npm install --save-dev node-sass
+```
+
+In your tool integration include node-sass-evergreen instead of node-sass
+
+```js
+var sass = require('node-sass-evergreen');
+```
+
+Now you are ready to start using node-sass in your tool. Please refer to the [node-sass README](https://github.com/sass/node-sass) for API specifications.
+
+Example:
+
+```js
+sass.render({
+  file: './foo.scss',
+  outFile: 'foo.css',
+  omitSourceMapUrl: true,
+  sourceMap: true,
+  sourceMapContents: true,
+}, function (err, result) {
+  // Use the resulting output here
+});
+```
+
+
 License
 -------
 
