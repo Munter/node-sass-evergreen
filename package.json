@@ -1,6 +1,6 @@
 {
   "name": "node-sass-evergreen",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "node-sass compatibility wrapper providing nodes-sass compatibility with previous major versions",
   "main": "lib/index.js",
   "scripts": {
