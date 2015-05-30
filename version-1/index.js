@@ -9,6 +9,8 @@ var node = require('when/node');
 
 var version = require('node-sass/package.json').version;
 
+var inlineSourceMapComment = require('inline-source-map-comment');
+
 function typesError() {
   throw new Error('types are not available in node-sass ' + version);
 }
@@ -57,9 +59,15 @@ function polyFillOptions(options, cb) {
       delete stats.sourceMap;
 
       var doneCallback = function () {
+        var sourceMapStr = sourceMap && JSON.stringify(sourceMap);
+
+        if (sourceMapStr && options.sourceMapEmbed) {
+          css += '\n' + inlineSourceMapComment(sourceMapStr, { block: true }) + '\n';
+        }
+
         cb(null, {
           css: new Buffer(css, 'utf8'),
-          map: sourceMap && new Buffer(JSON.stringify(sourceMap), 'utf8'),
+          map: sourceMapStr && new Buffer(sourceMapStr, 'utf8'),
           stats: stats
         });
       };
@@ -85,7 +93,8 @@ function polyFillOptions(options, cb) {
     success: successCallback,
     error: errorCallback,
     stats: stats,
-    sourceMap: sourceMap && (sourceMap + '.map')
+    sourceMap: sourceMap && (sourceMap + '.map'),
+    omitSourceMapUrl: options.omitSourceMapUrl || options.sourceMapEmbed
   });
 
   return finalOptions;
@@ -104,11 +113,12 @@ module.exports = extend({}, sass, {
 
   renderSync: function (options) {
     var compatOptions = polyFillOptions(options);
-    var result;
+    var css;
     var sourceMap;
+    var sourceMapStr;
 
     try {
-      result = sass.renderSync(compatOptions);
+      css = sass.renderSync(compatOptions);
     } catch (err) {
       var qualified = qualifyError(err);
       var newErr = new Error(qualified.message);
@@ -116,13 +126,8 @@ module.exports = extend({}, sass, {
       throw extend(newErr, qualified);
     }
 
-    var returnValue = {
-      css: new Buffer(result, 'utf8'),
-      stats: compatOptions.stats
-    };
-
-    if (returnValue.stats.sourceMap) {
-      sourceMap = JSON.parse(returnValue.stats.sourceMap);
+    if (compatOptions.stats.sourceMap) {
+      sourceMap = JSON.parse(compatOptions.stats.sourceMap);
 
       sourceMap.file = options.outFile;
 
@@ -132,12 +137,25 @@ module.exports = extend({}, sass, {
         });
       }
 
-      extend(returnValue, {
-        map: sourceMap && new Buffer(JSON.stringify(sourceMap), 'utf8'),
-      });
+      sourceMapStr = sourceMap && JSON.stringify(sourceMap);
+
+      if (sourceMapStr && compatOptions.sourceMapEmbed) {
+        css += '\n' + inlineSourceMapComment(sourceMapStr, { block: true }) + '\n';
+      }
     }
 
-    delete returnValue.stats.sourceMap;
+    delete compatOptions.stats.sourceMap;
+
+    var returnValue = {
+      css: new Buffer(css, 'utf8'),
+      stats: compatOptions.stats
+    };
+
+    if (sourceMapStr) {
+      extend(returnValue, {
+        map: new Buffer(sourceMapStr, 'utf8'),
+      });
+    }
 
     return returnValue;
   },
