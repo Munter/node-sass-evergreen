@@ -9,6 +9,6 @@ cache:
   - version-latest/node_modules
 node_js:
   - "0.10"
-  - "0.12"
+ # - "0.12" # Something crazy is going on for node 0.12 and node-sass 1.x
 script: "npm run-script travis"
 after_success: "<coverage/lcov.info ./node_modules/coveralls/bin/coveralls.js"

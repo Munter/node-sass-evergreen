@@ -10,6 +10,8 @@ var node = require('when/node');
 
 var version = require('node-sass/package.json').version;
 
+var inlineSourceMapComment = require('inline-source-map-comment');
+
 function typesError() {
   throw new Error('types are not available in node-sass ' + version);
 }
@@ -70,9 +72,15 @@ function polyFillOptions(options, cb) {
       }
 
       var doneCallback = function () {
+        var sourceMapStr = sourceMap && JSON.stringify(sourceMap);
+
+        if (sourceMapStr && options.sourceMapEmbed) {
+          css += '\n' + inlineSourceMapComment(sourceMapStr, { block: true }) + '\n';
+        }
+
         cb(null, {
           css: new Buffer(css, 'utf8'),
-          map: sourceMap && new Buffer(JSON.stringify(sourceMap), 'utf8'),
+          map: sourceMapStr && new Buffer(sourceMapStr, 'utf8'),
           stats: stats
         });
       };
@@ -99,7 +107,8 @@ function polyFillOptions(options, cb) {
     error: errorCallback,
     stats: stats,
     sourceComments: options.sourceMap ? 'map' : (options.sourceComments === true ? 'normal' : 'none'),
-    sourceMap: sourceMap && (Path.relative(Path.basename(options.file), sourceMap) + '.map')
+    sourceMap: sourceMap && (Path.relative(Path.basename(options.file), sourceMap) + '.map'),
+    omitSourceMapUrl: options.omitSourceMapUrl || options.sourceMapEmbed
   });
 }
 
