@@ -38,7 +38,7 @@ module.exports = function (sass) {
         });
       });
 
-      it('should fail on syntax errors', function () {
+      it('should fail on syntax errors - 1', function () {
 
         expect(function () {
           sass.renderSync({
@@ -49,6 +49,20 @@ module.exports = function (sass) {
             message: 'invalid top-level expression',
             line: 3,
             file: 'stdin'
+          });
+        });
+      });
+
+      it('should fail on syntax errors - 2', function () {
+        expect(function () {
+          sass.renderSync({
+            file: 'fixtures/syntax-error-2.scss',
+          });
+        }, 'to throw', function (err) {
+          expect(err, 'to satisfy', {
+            message: 'property "color" must be followed by a \':\'',
+            line: 2,
+            file: /fixtures\/syntax-error-2\.scss$/
           });
         });
       });

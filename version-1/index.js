@@ -14,10 +14,10 @@ function typesError() {
 }
 
 function qualifyError(err) {
-  var parts = err.split(/: */);
-  var file = parts[0];
-  var line = parseInt(parts[1] || 0);
-  var message = parts[2].trim().replace(/\n$/, '');
+  var parts = err.match(/^(.+?):(\d+): /);
+  var file = parts[1];
+  var line = parseInt(parts[2] || 0);
+  var message = err.replace(parts[0], '').trim().replace(/\n$/, '');
 
   return {
     message: message,
