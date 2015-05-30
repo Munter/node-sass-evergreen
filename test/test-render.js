@@ -109,6 +109,19 @@ module.exports = function (sass) {
         });
       });
 
+      it('should fail on missing file', function (done) {
+        sass.render({
+          file: 'fixtures/does-not-exist.scss'
+        }, function (err, result) {
+          expect(err, 'to exhaustively satisfy', {
+            status: 4,
+            message: 'File to read not found or unreadable: /home/munter/git/node-sass-evergreen/fixtures/does-not-exist.scss'
+          });
+
+          done();
+        });
+      });
+
       it('should fail on syntax errors - 1', function (done) {
         sass.render({
           file: 'fixtures/syntax-error.scss',

@@ -10,6 +10,21 @@ function typesError() {
   throw new Error('types are not available in node-sass ' + version);
 }
 
+function qualifyError(err) {
+  if (err.status === 4) {
+    var parts = err.message.split(': ');
+
+    parts[1] = Path.join(process.cwd(), parts[1]);
+
+    return {
+      status: 4,
+      message: parts.join(': ')
+    };
+  }
+
+  return err;
+}
+
 function qualifyResult(originalResult, options) {
   var result = extend({}, originalResult);
 
@@ -43,7 +58,7 @@ function polyFillOptions(options, cb) {
   };
 
   errorCallback = function (err) {
-    cb(err);
+    cb(qualifyError(err));
   };
 
   return extend({}, options, {
@@ -70,9 +85,10 @@ module.exports = extend({}, sass, {
       result = sass.renderSync(options);
     } catch (err) {
       var errJson = JSON.parse(err);
-      var error = new Error(errJson.message);
 
-      throw extend(error, errJson);
+      var error = qualifyError(extend(new Error(errJson.message), errJson));
+
+      throw error;
     }
 
     var qualityResult = qualifyResult(result, options);

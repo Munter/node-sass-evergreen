@@ -17,19 +17,28 @@ function typesError() {
 }
 
 function qualifyError(err) {
-  var file = err.match(/^[^:]+/)[0];
-  var line = parseInt(err.match(/:(\d+):/)[1] || 0);
-  var message = err.match(/error: (.*)/)[1];
+  if (err.indexOf('error reading file') === 0) {
+    var filePath = err.match(/(?:")(.*?)(?:")/)[1];
 
-  if (file === 'source string') {
-    file = 'stdin';
+    return {
+      status: 4,
+      message: 'File to read not found or unreadable: ' + Path.join(process.cwd(), filePath)
+    };
+  } else {
+    var file = err.match(/^[^:]+/)[0];
+    var line = parseInt(err.match(/:(\d+):/)[1] || 0);
+    var message = err.match(/error: (.*)/)[1];
+
+    if (file === 'source string') {
+      file = 'stdin';
+    }
+
+    return {
+      message: message,
+      line: line,
+      file: file
+    };
   }
-
-  return {
-    message: message,
-    line: line,
-    file: file
-  };
 }
 
 function polyFillOptions(options, cb) {

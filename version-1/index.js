@@ -2,6 +2,7 @@
 
 var sass = require('node-sass');
 var extend = require('extend');
+var Path = require('path');
 
 var fs = require('fs');
 var when = require('when');
@@ -16,16 +17,25 @@ function typesError() {
 }
 
 function qualifyError(err) {
-  var parts = err.match(/^(.+?):(\d+): /);
-  var file = parts[1];
-  var line = parseInt(parts[2] || 0);
-  var message = err.replace(parts[0], '').trim().replace(/\n$/, '');
+  if (err.indexOf('Error: File to read not found or unreadable:') === 0) {
+    var filePath = err.split(': ')[2].trim();
 
-  return {
-    message: message,
-    line: line,
-    file: file
-  };
+    return {
+      status: 4,
+      message: 'File to read not found or unreadable: ' + Path.join(process.cwd(), filePath)
+    };
+  } else {
+    var parts = err.match(/^(.+?):(\d+): /);
+    var file = parts[1];
+    var line = parseInt(parts[2] || 0);
+    var message = err.replace(parts[0], '').trim().replace(/\n$/, '');
+
+    return {
+      message: message,
+      line: line,
+      file: file
+    };
+  }
 }
 
 function polyFillOptions(options, cb) {
