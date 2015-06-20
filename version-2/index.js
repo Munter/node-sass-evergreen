@@ -11,18 +11,24 @@ function typesError() {
 }
 
 function qualifyError(err) {
+  if (err.message.indexOf('file to import not found or unreadable:') === 0) {
+    return extend(new Error(err.message.replace(/'/g, '')), {
+      status: 1,
+      file: err.file
+    });
+  }
+
   if (err.status === 4) {
     var parts = err.message.split(': ');
 
     parts[1] = Path.join(process.cwd(), parts[1]);
 
-    return {
-      status: 4,
-      message: parts.join(': ')
-    };
+    return extend(new Error(parts.join(': ')), {
+      status: 4
+    });
   }
 
-  return err;
+  return extend(new Error(err.message), err);
 }
 
 function qualifyResult(originalResult, options) {

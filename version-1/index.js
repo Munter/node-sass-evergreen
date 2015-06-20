@@ -30,11 +30,17 @@ function qualifyError(err) {
     var line = parseInt(parts[2] || 0);
     var message = err.replace(parts[0], '').trim().replace(/\n$/, '');
 
-    return {
-      message: message,
+    var errObj = {
       line: line,
       file: file
     };
+
+    if (message.indexOf('file to import not found or unreadable:') === 0) {
+      message = message.replace(/'/g, '');
+      errObj.status = 1;
+    }
+
+    return extend(new Error(message), errObj);
   }
 }
 
