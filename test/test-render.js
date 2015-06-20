@@ -126,6 +126,7 @@ module.exports = function (sass) {
         sass.render({
           file: 'fixtures/missing-import.scss'
         }, function (err, result) {
+          expect(err, 'to be an', Error);
           expect(err, 'to exhaustively satisfy', {
             status: 1,
             file: '/home/munter/git/node-sass-evergreen/fixtures/missing-import.scss',
@@ -140,6 +141,7 @@ module.exports = function (sass) {
         sass.render({
           file: 'fixtures/syntax-error.scss',
         }, function (err, result) {
+          expect(err, 'to be an', Error);
           expect(err, 'to satisfy', {
             message: 'invalid top-level expression',
             line: 3,
@@ -154,6 +156,7 @@ module.exports = function (sass) {
         sass.render({
           file: 'fixtures/syntax-error-2.scss',
         }, function (err, result) {
+          expect(err, 'to be an', Error);
           expect(err, 'to satisfy', {
             message: 'property "color" must be followed by a \':\'',
             line: 2,
