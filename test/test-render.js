@@ -122,6 +122,20 @@ module.exports = function (sass) {
         });
       });
 
+      it('should fail on missing @import', function (done) {
+        sass.render({
+          file: 'fixtures/missing-import.scss'
+        }, function (err, result) {
+          expect(err, 'to exhaustively satisfy', {
+            status: 1,
+            file: '/home/munter/git/node-sass-evergreen/fixtures/missing-import.scss',
+            message: 'file to import not found or unreadable: missing\nCurrent dir: /home/munter/git/node-sass-evergreen/fixtures/'
+          });
+
+          done();
+        });
+      });
+
       it('should fail on syntax errors - 1', function (done) {
         sass.render({
           file: 'fixtures/syntax-error.scss',
