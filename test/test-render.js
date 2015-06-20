@@ -115,7 +115,7 @@ module.exports = function (sass) {
         }, function (err, result) {
           expect(err, 'to exhaustively satisfy', {
             status: 4,
-            message: 'File to read not found or unreadable: /home/munter/git/node-sass-evergreen/fixtures/does-not-exist.scss'
+            message: /^File to read not found or unreadable: .*?\/node-sass-evergreen\/fixtures\/does-not-exist\.scss$/
           });
 
           done();
@@ -129,8 +129,8 @@ module.exports = function (sass) {
           expect(err, 'to be an', Error);
           expect(err, 'to exhaustively satisfy', {
             status: 1,
-            file: '/home/munter/git/node-sass-evergreen/fixtures/missing-import.scss',
-            message: 'file to import not found or unreadable: missing\nCurrent dir: /home/munter/git/node-sass-evergreen/fixtures/'
+            file: /node-sass-evergreen\/fixtures\/missing-import\.scss$/,
+            message: /^file to import not found or unreadable: missing\nCurrent dir: .*?\/node-sass-evergreen\/fixtures\/$/
           });
 
           done();

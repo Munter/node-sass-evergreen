@@ -43,8 +43,6 @@ function qualifyError(err) {
 
       message = message.replace(/'/g, '') + '\nCurrent dir: ' + currentDir + '/';
       errObj.status = 1;
-
-      console.log(__dirname);
     }
 
     return extend(new Error(message), errObj);
