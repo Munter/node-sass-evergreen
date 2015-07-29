@@ -43,12 +43,12 @@
     "jshint": "^2.7.0",
     "mocha": "^2.2.4",
     "mocha-lcov-reporter": "0.0.2",
-    "unexpected": "^7.4.2"
+    "unexpected": "^9.4.0"
   },
   "dependencies": {
-    "extend": "^2.0.1",
+    "extend": "^3.0.0",
     "inline-source-map-comment": "^1.0.5",
-    "semver": "^4.3.4",
+    "semver": "^5.0.1",
     "when": "^3.7.3"
   }
 }
