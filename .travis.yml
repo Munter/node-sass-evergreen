@@ -1,14 +1,7 @@
 language: node_js
-sudo: false
-cache:
-  directories:
-  - node_modules
-  - version-0/node_modules
-  - version-1/node_modules
-  - version-2/node_modules
-  - version-latest/node_modules
+cache: false
 node_js:
   - "0.10"
- # - "0.12" # Something crazy is going on for node 0.12 and node-sass 1.x
+  - "0.12"
 script: "npm run-script travis"
 after_success: "<coverage/lcov.info ./node_modules/coveralls/bin/coveralls.js"
