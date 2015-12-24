@@ -49,6 +49,6 @@
     "extend": "^3.0.0",
     "inline-source-map-comment": "^1.0.5",
     "semver": "^5.0.1",
-    "when": "^3.7.3"
+    "when": "^3.7.7"
   }
 }
