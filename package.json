@@ -38,7 +38,7 @@
     "node-sass": "*"
   },
   "devDependencies": {
-    "coveralls": "^2.11.2",
+    "coveralls": "^2.11.9",
     "istanbul": "^0.4.0",
     "jshint": "^2.7.0",
     "mocha": "^2.2.4",
