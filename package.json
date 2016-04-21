@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/Munter/node-sass-evergreen",
   "peerDependencies": {
-    "node-sass": "*"
+    "node-sass": "3.5.2"
   },
   "devDependencies": {
     "coveralls": "^2.11.2",
