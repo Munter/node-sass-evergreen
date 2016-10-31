@@ -1,7 +1,7 @@
 language: node_js
 cache: false
 node_js:
-  - "0.10"
-  - "0.12"
+  - 4
+  - 6
 script: "npm run-script travis"
 after_success: "<coverage/lcov.info ./node_modules/coveralls/bin/coveralls.js"
