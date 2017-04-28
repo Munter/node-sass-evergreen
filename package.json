@@ -46,7 +46,7 @@
     "unexpected": "^10.0.1"
   },
   "dependencies": {
-    "extend": "^3.0.0",
+    "extend": "^3.0.1",
     "inline-source-map-comment": "^1.0.5",
     "semver": "^5.0.1",
     "when": "^3.7.3"
